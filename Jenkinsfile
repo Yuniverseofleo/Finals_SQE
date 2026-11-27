@@ -15,7 +15,7 @@ pipeline {
 
         stage('Run Vitest Tests') {
             steps {
-                sh 'npm run test:coverage'
+                sh 'npm run test -- --run'
             }
         }
 
