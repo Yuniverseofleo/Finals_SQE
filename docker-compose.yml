@@ -1,0 +1,10 @@
+
+services:
+  sqe-final-project:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sqe-final-container
+    ports:
+      - "8080:80"
+    restart: unless-stopped
