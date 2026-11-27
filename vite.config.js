@@ -1,11 +1,21 @@
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
 
-// https://vite.dev/config/
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
 export default defineConfig({
-  devtools: {
-    // Remove this `apply` property to enable devtools for build as well
-    apply: 'serve',
-  },
   plugins: [react()],
+  test: {
+    environment: 'jsdom',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov', 'html'],
+      reportsDirectory: './coverage',
+      include: ['src/App.jsx'],
+      exclude: [
+        'src/**/*.test.jsx',
+        'src/**/__tests__/**',
+        'src/main.jsx'
+      ]
+    }
+  }
 })
