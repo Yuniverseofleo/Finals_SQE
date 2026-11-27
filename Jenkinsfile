@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'NodeJS'
+    }
+
     environment {
         SONAR_PROJECT_KEY = 'sqe-final-project'
         ARTIFACT_NAME     = "react-app-${env.BUILD_NUMBER}.tar.gz"
