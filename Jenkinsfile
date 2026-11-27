@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         nodejs 'NodeJS'
-        sonarscanner 'SonarScanner'
+        sonarRunner 'SonarScanner'
     }
 
     environment {
@@ -30,6 +30,28 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis & Quality Gate') {
+            when {
+                branch 'main'
+            }
+            steps {
+                script {
+                    def scannerHome = tool 'SonarScanner'
+                    withSonarQubeEnv('SonarQube') {
+                        sh """
+                            "${scannerHome}/bin/sonar-scanner" \
+                              -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                              -Dsonar.sources=src \
+                              -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+                        """
+                    }
+                }
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
         stage('Production Build') {
             when {
                 anyOf {
@@ -39,25 +61,6 @@ pipeline {
             }
             steps {
                 sh 'npm run build'
-            }
-        }
-
-        stage('SonarQube Analysis & Quality Gate') {
-            when {
-                branch 'main'
-            }
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh """
-                        sonar-scanner \
-                          -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                          -Dsonar.sources=src \
-                          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-                    """
-                }
-                timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
             }
         }
 
